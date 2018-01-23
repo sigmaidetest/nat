@@ -1,5 +1,5 @@
 {
-  "name": "nat",
+  "name": "slappbooks",
   "version": "1.0.0",
   "dependencies": {
     "aws-sdk": "2.176.0",
