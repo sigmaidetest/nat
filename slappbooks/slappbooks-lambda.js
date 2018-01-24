@@ -79,9 +79,7 @@ exports.handler = function (event, context, callback) {
 							connection.end();
 						}
 					}, connection);
-
 				}
-
 			}, connection);
 
 			connection.commit();
