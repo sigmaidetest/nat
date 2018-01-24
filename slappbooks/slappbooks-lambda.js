@@ -37,7 +37,6 @@ exports.handler = function (event, context, callback) {
 		// You can pass the existing connection to this function.
 		// A new connection will be creted if it's not present as the third param
 
-
 		// Replace the query with the actual query
 		// You can pass the existing connection to this function.
 		// A new connection will be creted if it's not present as the third param 
