@@ -5,24 +5,54 @@ const rds = new SL.AWS.RDS(connectionManager);
 exports.handler = function (event, context, callback) {
 
 	let entityName = event.entityName;
-	// Replace the query with the actual query
-	// You can pass the existing connection to this function.
-	// A new connection will be created if it's not present as the third param 
-	// You must always end the DB connection after it's used
-	rds.query({
-		instanceIdentifier: 'slappbooksdb',
-		query: 'DELETE FROM entity WHERE name=?',
-		inserts: [entityName]
-	}, function (error, results, connection) {
-		if (error) {
-			console.log("Error occurred while deleting the entity");
-			throw error;
-		} else {
-			console.log("Successfully deleted the entity")
-			console.log(results);
-		}
 
-		connection.end();
+	rds.beginTransaction({
+		instanceIdentifier: 'slappbooksdb'
+	}, function (error, connection) {
+		if (error) { throw err; }
+
+		// Replace the query with the actual query
+		// You can pass the existing connection to this function.
+		// A new connection will be created if it's not present as the third param 
+		// You must always end the DB connection after it's used
+		rds.query({
+			instanceIdentifier: 'slappbooksdb',
+			query: 'DELETE t2 FROM transaction t1 INNER JOIN entity e ON t1.entity_id=e.id INNER JOIN transaction t2 ON t1.set_id=t2.set_id WHERE e.name=?',
+			inserts: [entityName]
+		}, function (error, results, connection) {
+			if (error) {
+				connection.rollback();
+				console.log("Error occurred while deleting transactions from transaction table");
+				throw error;
+			} else {
+				console.log("Successfully deleted the transactions");
+				console.log(results);
+
+				// Replace the query with the actual query
+				// You can pass the existing connection to this function.
+				// A new connection will be created if it's not present as the third param 
+				// You must always end the DB connection after it's used
+				rds.query({
+					instanceIdentifier: 'slappbooksdb',
+					query: 'DELETE FROM entity WHERE name=?',
+					inserts: [entityName]
+				}, function (error, results, connection) {
+					if (error) {
+						connection.rollback();
+						console.log("Error occurred while deleting the entity");
+						throw error;
+					} else {
+						connection.commit();
+						console.log("Successfully deleted the entity");
+						console.log(results);
+						connection.end();
+					}
+
+				}, connection);
+			}
+		});
+
+
 	});
 
 	callback(null, 'Successfully executed');
