@@ -28,7 +28,6 @@ exports.handler = function (event, context, callback) {
 		transaction.isCredit = transaction.isCredit ? 1 : 0;
 	});
 
-
 	rds.beginTransaction({
 		instanceIdentifier: 'slappbooksdb'
 	}, function (error, connection) {
@@ -87,9 +86,7 @@ exports.handler = function (event, context, callback) {
 
 			connection.commit();
 		});
-
 	});
-
 
 	callback(null, JSON.stringify(event));
 }
