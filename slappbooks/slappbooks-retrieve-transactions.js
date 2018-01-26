@@ -18,7 +18,7 @@ exports.handler = function (event, context, callback) {
 
 	// Retrieve all transactions limited by the start index and page size
 	let sql = 'SELECT * FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name = ? LIMIT ?,?';
-
+	
 			rds.query({
 				instanceIdentifier: 'slappbooksdb',
 				query: 'SELECT count(*) as count FROM transaction;'

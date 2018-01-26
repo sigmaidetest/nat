@@ -99,7 +99,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "slappbooks/slappbooks-retrieve-transactions.js",
-        "code": "let AWS = require('aws-sdk');\nlet connectionManager = require('./ConnectionManager');\nlet SL = require('@slappforge/slappforge-sdk');\nconst rds = new SL.AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n\tconsole.log(event);\n\tlet postObject = event;\n\tlet entityName = postObject.entity;\n\tlet pageNo = postObject.page;\n\tlet pageSize = postObject.pageSize;\n\tlet sorted = postObject.sorted;\n\tlet filtered = postObject.filtered;\n\tlet startIndex = +pageNo * +pageSize;\n\tlet endIndex = startIndex + pageSize;\n\tlet pageNumber = 1;\n\n\t// Retrieve all transactions limited by the start index and page size\n\tlet sql = 'SELECT * FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name = ? LIMIT ?,?';\n\n\t\t\trds.query({\n\t\t\t\tinstanceIdentifier: 'slappbooksdb',\n\t\t\t\tquery: 'SELECT count(*) as count FROM transaction;'\n\t\t\t}, function (error, results, connection) {\n\t\t\t\tif (error) {\n\t\t\t\t\tconsole.log(\"Error occurred while retrieving count\", error);\n\t\t\t\t\tthrow error;\n\t\t\t\t} else {\n\t\t\t\t\tconsole.log(\"Successfully obtained database count\");\n\t\t\t\t\tconsole.log(results[0].count);\n\t\t\t\t\tpageNumber = Math.ceil(parseFloat(results[0].count) / parseFloat(pageSize));\n\t\t\t\t\t\n\t\t\t\t\t\trds.query({\n\t\t\t\t\t\tinstanceIdentifier: 'slappbooksdb',\n\t\t\t\t\t\tquery: sql,\n\t\t\t\t\t\tinserts: [entityName, startIndex, pageSize]\n\t\t\t\t\t}, function (error, results, connection) {\n\t\t\t\t\t\tif (error) {\n\t\t\t\t\t\t\tconsole.log(\"Error occurred while retreiving transactions\", error);\n\t\t\t\t\t\t\tthrow error;\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tlet transactions = [];\n\t\t\t\t\t\t\tconsole.log(\"Successfully retreived transactions\");\n\t\t\t\t\t\t\tresults.forEach(result => {\n\t\t\t\t\t\t\t\ttransactions.push({\n\t\t\t\t\t\t\t\t\ttrId: result.transaction_id,\n\t\t\t\t\t\t\t\t\tdate: result.date,\n\t\t\t\t\t\t\t\t\tcheckNo: result.cheque_no,\n\t\t\t\t\t\t\t\t\tvoucherNo: result.voucher_no,\n\t\t\t\t\t\t\t\t\tisCredit: result.is_credit,\n\t\t\t\t\t\t\t\t\tamount: result.amount,\n\t\t\t\t\t\t\t\t\tnotes: result.notes,\n\t\t\t\t\t\t\t\t\treconcile: result.reconcile,\n\t\t\t\t\t\t\t\t\tsetId: result.set_id,\n\t\t\t\t\t\t\t\t\tentityName: entityName\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\tlet finalResult = { rows: transactions, pages: pageNumber}\n\t\t\t\t\t\t\tconsole.log(finalResult);\n\t\t\t\t\t\t\tconnection.end();\n\t\t\t\t\t\t\tcallback(null, finalResult);\n\t\t\t\t\t\t}\n\t\t\t\t\t}, connection);\n\n\t\t\t\t}\n\t\t\t});\n}",
+        "code": "let AWS = require('aws-sdk');\nlet connectionManager = require('./ConnectionManager');\nlet SL = require('@slappforge/slappforge-sdk');\nconst rds = new SL.AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n\tconsole.log(event);\n\tlet postObject = event;\n\tlet entityName = postObject.entity;\n\tlet pageNo = postObject.page;\n\tlet pageSize = postObject.pageSize;\n\tlet sorted = postObject.sorted;\n\tlet filtered = postObject.filtered;\n\tlet startIndex = +pageNo * +pageSize;\n\tlet endIndex = startIndex + pageSize;\n\tlet pageNumber = 1;\n\n\t// Retrieve all transactions limited by the start index and page size\n\tlet sql = 'SELECT * FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name = ? LIMIT ?,?';\n\t\n\t\t\trds.query({\n\t\t\t\tinstanceIdentifier: 'slappbooksdb',\n\t\t\t\tquery: 'SELECT count(*) as count FROM transaction;'\n\t\t\t}, function (error, results, connection) {\n\t\t\t\tif (error) {\n\t\t\t\t\tconsole.log(\"Error occurred while retrieving count\", error);\n\t\t\t\t\tthrow error;\n\t\t\t\t} else {\n\t\t\t\t\tconsole.log(\"Successfully obtained database count\");\n\t\t\t\t\tconsole.log(results[0].count);\n\t\t\t\t\tpageNumber = Math.ceil(parseFloat(results[0].count) / parseFloat(pageSize));\n\t\t\t\t\t\n\t\t\t\t\t\trds.query({\n\t\t\t\t\t\tinstanceIdentifier: 'slappbooksdb',\n\t\t\t\t\t\tquery: sql,\n\t\t\t\t\t\tinserts: [entityName, startIndex, pageSize]\n\t\t\t\t\t}, function (error, results, connection) {\n\t\t\t\t\t\tif (error) {\n\t\t\t\t\t\t\tconsole.log(\"Error occurred while retreiving transactions\", error);\n\t\t\t\t\t\t\tthrow error;\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tlet transactions = [];\n\t\t\t\t\t\t\tconsole.log(\"Successfully retreived transactions\");\n\t\t\t\t\t\t\tresults.forEach(result => {\n\t\t\t\t\t\t\t\ttransactions.push({\n\t\t\t\t\t\t\t\t\ttrId: result.transaction_id,\n\t\t\t\t\t\t\t\t\tdate: result.date,\n\t\t\t\t\t\t\t\t\tcheckNo: result.cheque_no,\n\t\t\t\t\t\t\t\t\tvoucherNo: result.voucher_no,\n\t\t\t\t\t\t\t\t\tisCredit: result.is_credit,\n\t\t\t\t\t\t\t\t\tamount: result.amount,\n\t\t\t\t\t\t\t\t\tnotes: result.notes,\n\t\t\t\t\t\t\t\t\treconcile: result.reconcile,\n\t\t\t\t\t\t\t\t\tsetId: result.set_id,\n\t\t\t\t\t\t\t\t\tentityName: entityName\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\tlet finalResult = { rows: transactions, pages: pageNumber}\n\t\t\t\t\t\t\tconsole.log(finalResult);\n\t\t\t\t\t\t\tconnection.end();\n\t\t\t\t\t\t\tcallback(null, finalResult);\n\t\t\t\t\t\t}\n\t\t\t\t\t}, connection);\n\n\t\t\t\t}\n\t\t\t});\n}",
         "resources": [
           "rds-slappbooksdb",
           "rds-slappbooksdb",
@@ -140,6 +140,7 @@
         "filePath": "slappbooks/slappbooks-create-entity.js",
         "code": "let AWS = require('aws-sdk');\nlet connectionManager = require('./ConnectionManager');\nlet SL = require('@slappforge/slappforge-sdk');\nconst rds = new SL.AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n\tlet entity = event;\n\n\tlet sql = 'INSERT INTO entity (name, currency, type) values (?, ?, ?)';\n\t// Insert entity value to the database\n\trds.query({\n\t\tinstanceIdentifier: 'slappbooksdb',\n\t\tquery: sql,\n\t\tinserts: [entity.entity, entity.currency, entity.entityType]\n\t}, function (error, results, connection) {\n\t\tif (error) {\n\t\t\tconsole.log(\"Error occurred while inserting the entity\", error);\n\t\t\tthrow error;\n\t\t} else {\n\t\t\tconsole.log(\"Successfully inserted the entity\");\n\t\t\tconsole.log(results);\n\t\t}\n\t\tconnection.end();\n\t\tcallback(null, 'Successfully executed');\n\t});\n}",
         "resources": [
+          "rds-slappbooksdb",
           "rds-slappbooksdb"
         ],
         "triggers": [
@@ -691,24 +692,25 @@
           "operation": 0,
           "rdsInstance": {
             "rdsEngineType": "mysql",
-            "rdsEdition": "mysql",
+            "rdsEdition": "",
             "rdsInstanceSpec": {
               "dbInstanceClass": "db.t2.micro",
               "dbLicenseModel": "general-public-license",
-              "dbEngineVersion": "5.6.37"
+              "dbEngineVersion": "5.7.19"
             },
             "rdsSetting": {
               "instanceIdentifier": "slappbooksdb",
               "masterUsername": "slappbooksuser",
-              "masterPassword": ""
+              "masterPassword": "12345678"
             },
             "rdsDBOptions": {
               "dbName": "slappbooksdb",
-              "dbPort": 3306
+              "dbPort": "3306"
             },
-            "rdsInstanceArn": "arn:aws:rds:us-east-1:480964559519:db:slappbooksdb",
-            "Host": "slappbooksdb.cvmlduwb8e2g.us-east-1.rds.amazonaws.com",
-            "doesExist": true
+            "rdsInstanceArn": "",
+            "Host": "process.env.EndPoint_slappbooksdb",
+            "doesExist": false,
+            "initializationQuery": "CREATE TABLE transaction (\n\tid INT AUTO_INCREMENT,\n\ttransaction_id VARCHAR(255) UNIQUE,\n\tset_id VARCHAR(255),\n\tdate DATE,\n\tentity_id INT NOT NULL,\n\tcheque_no VARCHAR(50),\n\tvoucher_no VARCHAR(50),\n\tis_credit INT,\n\tamount DOUBLE,\n\tnotes VARCHAR(255),\n\treconcile INT,\n\tPRIMARY KEY (id),\n\tFOREIGN KEY (entity_id) REFERENCES entity (id) ON DELETE CASCADE\n);\n\n\nCREATE TABLE entity (\n\tid INT AUTO_INCREMENT,\n\tname VARCHAR(255),\n\tcurrency VARCHAR(10),\n\ttype VARCHAR(255),\n\tPRIMARY KEY (id)\n);\n\nCREATE TABLE conversion (\n\tid INT AUTO_INCREMENT,\n\ttransaction_id VARCHAR(255) NOT NULL,\n\tto_currency VARCHAR(10),\n\tfrom_currency VARCHAR(10),\n\trate DOUBLE,\n\tPRIMARY KEY (id),\n\tFOREIGN KEY (transaction_id) REFERENCES transaction (transaction_id) ON DELETE CASCADE\n);\n\ninsert into entity (id, name, currency, type) values (1, \"Cash\", \"LKR\", \"ASSETS\");\ninsert into entity (id, name, currency, type) values (2, \"Bank\", \"LKR\", \"ASSETS\");\ninsert into entity (id, name, currency, type) values (3, \"Sales\", \"LKR\", \"INCOME\");"
           },
           "rdsInstanceResources": [
             {
@@ -791,7 +793,8 @@
                                 "dbPort": 3306
                               },
                               "rdsInstanceArn": "arn:aws:rds:us-east-1:480964559519:db:slappbooksdb",
-                              "Host": "slappbooksdb.cvmlduwb8e2g.us-east-1.rds.amazonaws.com"
+                              "Host": "slappbooksdb.cvmlduwb8e2g.us-east-1.rds.amazonaws.com",
+                              "doesExist": true
                             },
                             "rdsInstanceResources": [
                               {
@@ -853,7 +856,7 @@
                                             "type": "RDS",
                                             "config": {
                                               "editMode": false,
-                                              "operation": 1,
+                                              "operation": 0,
                                               "rdsInstance": {
                                                 "rdsEngineType": "mysql",
                                                 "rdsEdition": "mysql",
@@ -880,7 +883,7 @@
                                                   "type": "RDS",
                                                   "config": {
                                                     "editMode": false,
-                                                    "operation": 0,
+                                                    "operation": 1,
                                                     "rdsInstance": {
                                                       "rdsEngineType": "mysql",
                                                       "rdsEdition": "mysql",
@@ -907,7 +910,7 @@
                                                         "type": "RDS",
                                                         "config": {
                                                           "editMode": false,
-                                                          "operation": 1,
+                                                          "operation": 0,
                                                           "rdsInstance": {
                                                             "rdsEngineType": "mysql",
                                                             "rdsEdition": "mysql",
@@ -934,7 +937,7 @@
                                                               "type": "RDS",
                                                               "config": {
                                                                 "editMode": false,
-                                                                "operation": 0,
+                                                                "operation": 1,
                                                                 "rdsInstance": {
                                                                   "rdsEngineType": "mysql",
                                                                   "rdsEdition": "mysql",
@@ -1177,7 +1180,7 @@
                                                                                                                     "type": "RDS",
                                                                                                                     "config": {
                                                                                                                       "editMode": false,
-                                                                                                                      "operation": 1,
+                                                                                                                      "operation": 0,
                                                                                                                       "rdsInstance": {
                                                                                                                         "rdsEngineType": "mysql",
                                                                                                                         "rdsEdition": "mysql",
@@ -1198,7 +1201,42 @@
                                                                                                                         "rdsInstanceArn": "arn:aws:rds:us-east-1:480964559519:db:slappbooksdb",
                                                                                                                         "Host": "slappbooksdb.cvmlduwb8e2g.us-east-1.rds.amazonaws.com"
                                                                                                                       },
-                                                                                                                      "rdsInstanceResources": [],
+                                                                                                                      "rdsInstanceResources": [
+                                                                                                                        {
+                                                                                                                          "name": "rds-slappbooksdb",
+                                                                                                                          "type": "RDS",
+                                                                                                                          "config": {
+                                                                                                                            "editMode": false,
+                                                                                                                            "operation": 1,
+                                                                                                                            "rdsInstance": {
+                                                                                                                              "rdsEngineType": "mysql",
+                                                                                                                              "rdsEdition": "mysql",
+                                                                                                                              "rdsInstanceSpec": {
+                                                                                                                                "dbInstanceClass": "db.t2.micro",
+                                                                                                                                "dbLicenseModel": "general-public-license",
+                                                                                                                                "dbEngineVersion": "5.6.37"
+                                                                                                                              },
+                                                                                                                              "rdsSetting": {
+                                                                                                                                "instanceIdentifier": "slappbooksdb",
+                                                                                                                                "masterUsername": "slappbooksuser",
+                                                                                                                                "masterPassword": ""
+                                                                                                                              },
+                                                                                                                              "rdsDBOptions": {
+                                                                                                                                "dbName": "slappbooksdb",
+                                                                                                                                "dbPort": 3306
+                                                                                                                              },
+                                                                                                                              "rdsInstanceArn": "arn:aws:rds:us-east-1:480964559519:db:slappbooksdb",
+                                                                                                                              "Host": "slappbooksdb.cvmlduwb8e2g.us-east-1.rds.amazonaws.com"
+                                                                                                                            },
+                                                                                                                            "rdsInstanceResources": [],
+                                                                                                                            "isTransactional": false,
+                                                                                                                            "selectedRegion": "us-east-1",
+                                                                                                                            "mode": 1,
+                                                                                                                            "additionalFiles": []
+                                                                                                                          },
+                                                                                                                          "usage": {}
+                                                                                                                        }
+                                                                                                                      ],
                                                                                                                       "isTransactional": false,
                                                                                                                       "selectedRegion": "us-east-1",
                                                                                                                       "mode": 1,
@@ -1207,7 +1245,6 @@
                                                                                                                     "usage": {}
                                                                                                                   }
                                                                                                                 ],
-                                                                                                                "isTransactional": false,
                                                                                                                 "selectedRegion": "us-east-1",
                                                                                                                 "mode": 1,
                                                                                                                 "additionalFiles": []
@@ -1303,13 +1340,89 @@
                                   "mode": 1,
                                   "additionalFiles": []
                                 },
-                                "usage": {}
+                                "usage": {
+                                  "6ce22331-3d5d-4d2e-a5ff-a2f2b38257dd": {
+                                    "operations": {
+                                      "beginTransaction": [
+                                        {
+                                          "instanceIdentifier": "slappbooksdb"
+                                        }
+                                      ]
+                                    },
+                                    "occurrence": 1,
+                                    "triggers": []
+                                  },
+                                  "0cafcfb9-14f8-4cdc-861f-299678af0759": {
+                                    "operations": {
+                                      "query": [
+                                        {
+                                          "instanceIdentifier": "slappbooksdb",
+                                          "query": "SELECT count(*) as count FROM transaction;"
+                                        }
+                                      ]
+                                    },
+                                    "occurrence": 1,
+                                    "triggers": []
+                                  },
+                                  "d5e8f837-33f8-4736-ba1b-eb1f3aface18": {
+                                    "operations": {
+                                      "query": [
+                                        {
+                                          "instanceIdentifier": "slappbooksdb",
+                                          "query": "${sql}"
+                                        }
+                                      ]
+                                    },
+                                    "occurrence": 1,
+                                    "triggers": []
+                                  },
+                                  "02bc79d4-d52f-4002-b502-992569e9d409": {
+                                    "operations": {
+                                      "beginTransaction": [
+                                        {
+                                          "instanceIdentifier": "slappbooksdb"
+                                        }
+                                      ]
+                                    },
+                                    "occurrence": 1,
+                                    "triggers": []
+                                  },
+                                  "d5925ac9-5dfa-4cc8-9963-15dd6fb40204": {
+                                    "operations": {
+                                      "beginTransaction": [
+                                        {
+                                          "instanceIdentifier": "slappbooksdb"
+                                        }
+                                      ]
+                                    },
+                                    "occurrence": 1,
+                                    "triggers": []
+                                  },
+                                  "0fddcfbb-9df4-458a-a743-9f28159227fc": {
+                                    "operations": {
+                                      "beginTransaction": [
+                                        {
+                                          "instanceIdentifier": "slappbooksdb"
+                                        }
+                                      ]
+                                    },
+                                    "occurrence": 1,
+                                    "triggers": []
+                                  }
+                                }
                               }
                             ],
                             "selectedRegion": "us-east-1",
                             "mode": 1,
-                            "additionalFiles": []
+                            "additionalFiles": [],
+                            "params": {
+                              "query": "DELETE FROM entity WHERE name=?",
+                              "inserts": "entityName"
+                            },
+                            "isGlobalEditMode": false,
+                            "enableInject": true
                           },
+                          "globallyEditable": true,
                           "usage": {
                             "6ce22331-3d5d-4d2e-a5ff-a2f2b38257dd": {
                               "operations": {
@@ -1386,7 +1499,7 @@
                       "mode": 1,
                       "additionalFiles": [],
                       "params": {
-                        "query": "DELETE FROM entity WHERE name=?",
+                        "query": "DELETE t2 FROM transaction t1 INNER JOIN entity e ON t1.entity_id=e.id INNER JOIN transaction t2 ON t1.set_id=t2.set_id WHERE e.name=?",
                         "inserts": "entityName"
                       },
                       "isGlobalEditMode": false,
@@ -1461,6 +1574,17 @@
                         },
                         "occurrence": 1,
                         "triggers": []
+                      },
+                      "8585b721-aeb2-4a48-978d-ddfca08566d1": {
+                        "operations": {
+                          "beginTransaction": [
+                            {
+                              "instanceIdentifier": "slappbooksdb"
+                            }
+                          ]
+                        },
+                        "occurrence": 1,
+                        "triggers": []
                       }
                     }
                   }
@@ -1469,8 +1593,8 @@
                 "mode": 1,
                 "additionalFiles": [],
                 "params": {
-                  "query": "DELETE t2 FROM transaction t1 INNER JOIN entity e ON t1.entity_id=e.id INNER JOIN transaction t2 ON t1.set_id=t2.set_id WHERE e.name=?",
-                  "inserts": "entityName"
+                  "query": "SELECT E.name AS name, SUM( IF(T.is_credit='1', -1*T.amount, T.amount)) AS value FROM transaction T INNER JOIN entity E on T.entity_id=E.id GROUP BY E.id;",
+                  "inserts": ""
                 },
                 "isGlobalEditMode": false,
                 "enableInject": true
@@ -1560,10 +1684,10 @@
             }
           ],
           "selectedRegion": "us-east-1",
-          "mode": 1,
+          "mode": 0,
           "additionalFiles": [],
           "params": {
-            "query": "SELECT E.name AS name, SUM( IF(T.is_credit='1', -1*T.amount, T.amount)) AS value FROM transaction T INNER JOIN entity E on T.entity_id=E.id GROUP BY E.id;",
+            "query": "jhkjh",
             "inserts": ""
           },
           "isGlobalEditMode": false,
@@ -2284,6 +2408,6 @@
     "projectVersion": "1.0.0",
     "repoName": "nat",
     "repoUrl": "https://github.com/sigmaidetest/nat",
-    "lastSave": 1516953921336
+    "lastSave": 1516954220353
   }
 }
