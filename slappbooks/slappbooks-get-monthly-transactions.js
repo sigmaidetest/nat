@@ -2,7 +2,9 @@ let AWS = require('aws-sdk');
 let connectionManager = require('./ConnectionManager');
 let SL = require('@slappforge/slappforge-sdk');
 const rds = new SL.AWS.RDS(connectionManager);
+
 exports.handler = function (event, context, callback) {
+
 	let postObject = event;
 	let entityName = postObject.entity;
 	let pageNo = postObject.page;
@@ -15,57 +17,9 @@ exports.handler = function (event, context, callback) {
 	let year = postObject.year;
 	let month = postObject.month;
 
-	switch(month) {
-		case "January":
-			month = '01';
-			break;
-		case "February":
-			month = '02';
-			break;
-		case "March":
-			month = '03';
-			break;
-		case "April":
-			month = '01';
-			break;
-		case "May":
-			month = '05';
-			break;
-		case "June":
-			month = '06';
-			break;
-		case "July":
-			month = '07';
-			break;
-		case "August":
-			month = '08';
-			break;
-		case "September":
-			month = '09';
-			break;
-		case "October":
-			month = '10';
-			break;
-		case "November":
-			month = '11';
-			break;
-		case "December":
-			month = '12';
-			break;
-		default:
-			month = '01';
-	}
-
-	// Replace the query with the actual query
-	// You can pass the existing connection to this function.
-	// A new connection will be creted if it's not present as the third param 
+	// retrieve transactions between the selected time frame
 	let sql = 'SELECT * FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name =? AND date BETWEEN ? AND ?  LIMIT ?,?';
-	console.log(month);
-	console.log(year);
 
-	// Replace the query with the actual query
-	// You can pass the existing connection to this function.
-	// A new connection will be creted if it's not present as the third param 
 	rds.query({
 		instanceIdentifier: 'slappbooksdb',
 		query: 'SELECT count(*) as count FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name=?',
@@ -79,9 +33,7 @@ exports.handler = function (event, context, callback) {
 			console.log(results[0].count);
 			pageNumber = Math.ceil(parseFloat(results[0].count) / parseFloat(pageSize));
 
-			// Replace the query with the actual query
-			// You can pass the existing connection to this function.
-			// A new connection will be creted if it's not present as the third param 
+			// retrieve transactions between a given time frame
 			rds.query({
 				instanceIdentifier: 'slappbooksdb',
 				query: sql,
@@ -99,16 +51,14 @@ exports.handler = function (event, context, callback) {
 
 						debitSql = 'SELECT SUM(amount) as debit  FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name = ? AND T.is_credit = 0 AND date < ?';
 						creditSql = 'SELECT SUM(amount) as credit FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name = ? AND T.is_credit = 1 AND date < ?';
-						// Replace the query with the actual query
-						// You can pass the existing connection to this function.
-						// A new connection will be creted if it's not present as the third param 
+						// Generate the required credit and debit balances to formulate the balance brought forward query
 						rds.query({
 							instanceIdentifier: 'slappbooksdb',
 							query: debitSql,
 							inserts: [entityName, year.concat("-").concat(month).concat("-01")]
 						}, function (error, resultDebit, connection) {
 							if (error) {
-								console.log("Error occurred while counting debit transactions", error);
+								console.log("Error occurred while retrieving debit transactions", error);
 								throw error;
 							} else {
 								console.log("Successfully retreived debit transactions");
@@ -116,16 +66,14 @@ exports.handler = function (event, context, callback) {
 								let debit = resultDebit[0].debit;
 
 
-								// Replace the query with the actual query
-								// You can pass the existing connection to this function.
-								// A new connection will be creted if it's not present as the third param 
+								// Retrieve credit transactions from the database
 								rds.query({
 									instanceIdentifier: 'slappbooksdb',
 									query: creditSql,
 									inserts: [entityName, year.concat("-").concat(month).concat("-01")]
 								}, function (error, resultCredit, connection) {
 									if (error) {
-										console.log("Error occurred while counting credit transactions", error);
+										console.log("Error occurred while retrieving credit transactions", error);
 										throw error;
 									} else {
 										console.log("Successfully retrieved credit transactions");
@@ -185,7 +133,7 @@ exports.handler = function (event, context, callback) {
 					console.log(finalResult);
 					connection.end();
 					callback(null, finalResult);
-					}
+				  	}
 					
 				}
 			}, connection);

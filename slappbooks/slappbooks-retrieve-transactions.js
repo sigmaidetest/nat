@@ -2,7 +2,9 @@ let AWS = require('aws-sdk');
 let connectionManager = require('./ConnectionManager');
 let SL = require('@slappforge/slappforge-sdk');
 const rds = new SL.AWS.RDS(connectionManager);
+
 exports.handler = function (event, context, callback) {
+
 	console.log(event);
 	let postObject = event;
 	let entityName = postObject.entity;
@@ -14,30 +16,21 @@ exports.handler = function (event, context, callback) {
 	let endIndex = startIndex + pageSize;
 	let pageNumber = 1;
 
-	// Replace the query with the actual query
-	// You can pass the existing connection to this function.
-	// A new connection will be creted if it's not present as the third param 
+	// Retrieve all transactions limited by the start index and page size
 	let sql = 'SELECT * FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name = ? LIMIT ?,?';
 
-
-			// Replace the query with the actual query
-			// You can pass the existing connection to this function.
-			// A new connection will be creted if it's not present as the third param 
 			rds.query({
 				instanceIdentifier: 'slappbooksdb',
 				query: 'SELECT count(*) as count FROM transaction;'
 			}, function (error, results, connection) {
 				if (error) {
-					console.log("Error occurred while retrieving count");
+					console.log("Error occurred while retrieving count", error);
 					throw error;
 				} else {
 					console.log("Successfully obtained database count");
 					console.log(results[0].count);
 					pageNumber = Math.ceil(parseFloat(results[0].count) / parseFloat(pageSize));
 					
-					// Replace the query with the actual query
-					// You can pass the existing connection to this function.
-					// A new connection will be creted if it's not present as the third param 
 						rds.query({
 						instanceIdentifier: 'slappbooksdb',
 						query: sql,
@@ -72,12 +65,4 @@ exports.handler = function (event, context, callback) {
 
 				}
 			});
-
-
-	/* let transactions = {
-		rows: [{ date: '01/16/2018', checkNo: '', notes: '', amount: 100, isCredit: false, entityName: 'Cash', trId: '12345678' },
-		{ date: '01/16/2018', checkNo: '', notes: '', amount: '(100)', isCredit: true, entityName: 'Bank', trId: '87654321' }],
-		pages: 1
-	};
-	callback(null, transactions); */
 }

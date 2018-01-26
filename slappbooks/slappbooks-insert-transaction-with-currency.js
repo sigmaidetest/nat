@@ -22,15 +22,6 @@ exports.handler = function (event, context, callback) {
 	}, function (error, connection) {
 		if (error) { throw err; }
 
-		// Replace the query with the actual query
-		// You can pass the existing connection to this function.
-		// A new connection will be creted if it's not present as the third param
-
-
-		// Replace the query with the actual query
-		// You can pass the existing connection to this function.
-		// A new connection will be creted if it's not present as the third param 
-
 		let sql = 'INSERT INTO transaction (transaction_id, set_id, date, entity_id, is_credit, cheque_no, voucher_no, amount, notes, reconcile) VALUES (?,?,?,?,?, ?, ?, ?, ?, ?);'
 		transactions.forEach((transaction, index) => {
 
@@ -47,9 +38,7 @@ exports.handler = function (event, context, callback) {
 					console.log("Successfully retrieved the entity id")
 					let entity_id = results[0].id;
 					console.log(transaction.trId);
-					// Replace the query with the actual query
-					// You can pass the existing connection to this function.
-					// A new connection will be creted if it's not present as the third param 
+					
 					rds.query({
 						identifier: 'slappbooksdb',
 						query: sql,
@@ -65,9 +54,7 @@ exports.handler = function (event, context, callback) {
 
 
 							sql = 'INSERT INTO conversion (transaction_id, to_currency, from_currency, rate) VALUES (?,?,?,?)';
-							// Replace the query with the actual query
-							// You can pass the existing connection to this function.
-							// A new connection will be creted if it's not present as the third param 
+							
 							rds.query({
 								instanceIdentifier: 'slappbooksdb',
 								query: sql,

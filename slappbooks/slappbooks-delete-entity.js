@@ -11,10 +11,6 @@ exports.handler = function (event, context, callback) {
 	}, function (error, connection) {
 		if (error) { throw err; }
 
-		// Replace the query with the actual query
-		// You can pass the existing connection to this function.
-		// A new connection will be created if it's not present as the third param 
-		// You must always end the DB connection after it's used
 		rds.query({
 			instanceIdentifier: 'slappbooksdb',
 			query: 'DELETE t2 FROM transaction t1 INNER JOIN entity e ON t1.entity_id=e.id INNER JOIN transaction t2 ON t1.set_id=t2.set_id WHERE e.name=?',
@@ -28,10 +24,6 @@ exports.handler = function (event, context, callback) {
 				console.log("Successfully deleted the transactions");
 				console.log(results);
 
-				// Replace the query with the actual query
-				// You can pass the existing connection to this function.
-				// A new connection will be created if it's not present as the third param 
-				// You must always end the DB connection after it's used
 				rds.query({
 					instanceIdentifier: 'slappbooksdb',
 					query: 'DELETE FROM entity WHERE name=?',
