@@ -53,8 +53,10 @@ exports.handler = function (event, context, callback) {
 							}, connection);
 
 						}
+
 					}, connection);
 			});
+		
 	});
 
 	callback(null, 'Successfully executed');
