@@ -12,10 +12,11 @@ exports.handler = function (event, context, callback) {
 	"IF(E.currency!=?, T.amount*?, T.amount))) AS value FROM transaction T INNER JOIN entity E on" +
 	" T.entity_id=E.id LEFT JOIN conversion C on T.transaction_id=C.transaction_id GROUP BY E.id;";
 
+	let params = [defaultCurrency, spotRate, defaultCurrency, spotRate];
 	rds.query({
 		instanceIdentifier: 'slappbooksdb',
 		query: sql,
-		inserts: [defaultCurrency, spotRate, defaultCurrency, spotRate]
+		inserts: params
 	}, function (error, results, connection) {
 		if (error) {
 			console.log("Error occurred while preparing the trial balance", error);

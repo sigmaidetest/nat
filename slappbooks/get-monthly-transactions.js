@@ -16,14 +16,17 @@ exports.handler = function (event, context, callback) {
 	let pageNumber = 1;
 	let year = postObject.year;
 	let month = postObject.month;
+	let monthStart = year.concat("-").concat(month).concat("-01");
+	let monthEnd = year.concat("-").concat(month).concat("-31");
 
 	// retrieve transactions between the selected time frame
 	let sql = 'SELECT * FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name =? AND date BETWEEN ? AND ?  LIMIT ?,?';
 
+	let entity = [entityName];
 	rds.query({
 		instanceIdentifier: 'slappbooksdb',
 		query: 'SELECT count(*) as count FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name=?',
-		inserts: [entityName]
+		inserts: entity
 	}, function (error, results, connection) {
 		if (error) {
 			console.log("Error occurred while retrieving count");
@@ -34,10 +37,11 @@ exports.handler = function (event, context, callback) {
 			pageNumber = Math.ceil(parseFloat(results[0].count) / parseFloat(pageSize));
 
 			// retrieve transactions between a given time frame
+			let timeQuery = [entityName, monthStart, monthEnd, startIndex, pageSize];
 			rds.query({
 				instanceIdentifier: 'slappbooksdb',
 				query: sql,
-				inserts: [entityName, year.concat("-").concat(month).concat("-01"), year.concat("-").concat(month).concat("-31"), startIndex, pageSize]
+				inserts: timeQuery
 			}, function (error, results, connection) {
 				if (error) {
 					console.log("Error occurred while retreiving transactions", error);
@@ -51,11 +55,12 @@ exports.handler = function (event, context, callback) {
 
 						debitSql = 'SELECT SUM(amount) as debit  FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name = ? AND T.is_credit = 0 AND date < ?';
 						creditSql = 'SELECT SUM(amount) as credit FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name = ? AND T.is_credit = 1 AND date < ?';
+						let params = [entityName, monthStart];
 						// Generate the required credit and debit balances to formulate the balance brought forward query
 						rds.query({
 							instanceIdentifier: 'slappbooksdb',
 							query: debitSql,
-							inserts: [entityName, year.concat("-").concat(month).concat("-01")]
+							inserts: params
 						}, function (error, resultDebit, connection) {
 							if (error) {
 								console.log("Error occurred while retrieving debit transactions", error);
@@ -70,7 +75,7 @@ exports.handler = function (event, context, callback) {
 								rds.query({
 									instanceIdentifier: 'slappbooksdb',
 									query: creditSql,
-									inserts: [entityName, year.concat("-").concat(month).concat("-01")]
+									inserts: params
 								}, function (error, resultCredit, connection) {
 									if (error) {
 										console.log("Error occurred while retrieving credit transactions", error);
@@ -84,7 +89,7 @@ exports.handler = function (event, context, callback) {
 										transactions.push({
 											trId: '00000000000000000',
 											notes: 'Balance Brought Forward',
-											date: year.concat("-").concat(month).concat("-01"),
+											date: monthStart,
 											isCredit: (+debit - +credit) < 0 ? 1 : 0,
 											amount: Math.abs(+debit - +credit),
 											entityName: entityName

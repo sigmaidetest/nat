@@ -9,11 +9,12 @@ exports.handler = function (event, context, callback) {
 
     sql = 'SELECT T.transaction_id, T.set_id, T.date, T.cheque_no, T.is_credit, T.amount, T.notes, T.reconcile, E.name FROM ' + 
     'transaction T INNER JOIN entity E on T.entity_id=E.id where T.set_id=?;';    
-    
+    let params = [transactionId];
+
     rds.query({
         instanceIdentifier: 'slappbooksdb',
         query: sql,
-        inserts: [transactionId]
+        inserts: params
     }, function (error, results, connection) {
         if (error) {
             console.log("Error occurred while retrieving the transaction with set_id", transactionId, error);

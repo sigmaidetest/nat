@@ -12,10 +12,11 @@ exports.handler = function (event, context, callback) {
 	}, function (error, connection) {
 		if (error) { throw err; }
 
+		let entity = [entityName];
 		rds.query({
 			instanceIdentifier: 'slappbooksdb',
 			query: 'DELETE t2 FROM transaction t1 INNER JOIN entity e ON t1.entity_id=e.id INNER JOIN transaction t2 ON t1.set_id=t2.set_id WHERE e.name=?',
-			inserts: [entityName]
+			inserts: entity
 		}, function (error, results, connection) {
 			if (error) {
 				connection.rollback();
@@ -28,7 +29,7 @@ exports.handler = function (event, context, callback) {
 				rds.query({
 					instanceIdentifier: 'slappbooksdb',
 					query: 'DELETE FROM entity WHERE name=?',
-					inserts: [entityName]
+					inserts: entity
 				}, function (error, results, connection) {
 					if (error) {
 						connection.rollback();

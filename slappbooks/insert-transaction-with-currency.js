@@ -25,11 +25,13 @@ exports.handler = function (event, context, callback) {
 
 		let sql = 'INSERT INTO transaction (transaction_id, set_id, date, entity_id, is_credit, cheque_no, voucher_no, amount, notes,' + 
 		' reconcile) VALUES (?,?,?,?,?, ?, ?, ?, ?, ?);'
+
 		transactions.forEach((transaction, index) => {
+			let entity = [transaction.entityName];
 			rds.query({
 				instanceIdentifier: 'slappbooksdb',
 				query: 'SELECT id FROM entity WHERE name = ?',
-				inserts: [transaction.entityName]
+				inserts: entity
 			}, function (error, results, connection) {
 				if (error) {
 					console.log("Error occurred while retreiving the entity id from the database", error);
@@ -40,11 +42,13 @@ exports.handler = function (event, context, callback) {
 					console.log("Successfully retrieved the entity id")
 					let entity_id = results[0].id;
 					console.log(transaction.trId);
-					
+					let params = [transaction.trId, transaction.setId, transaction.date, entity_id, transaction.isCredit,
+						transaction.checkNo, transaction.voucherNo, transaction.amount, transaction.notes, transaction.reconcile];
+
 					rds.query({
 						identifier: 'slappbooksdb',
 						query: sql,
-						inserts: [transaction.trId, transaction.setId, transaction.date, entity_id, transaction.isCredit, transaction.checkNo, transaction.voucherNo, transaction.amount, transaction.notes, transaction.reconcile]
+						inserts: params
 					}, function (error, results, connection) {
 						if (error) {
 							connection.rollback();
@@ -55,11 +59,13 @@ exports.handler = function (event, context, callback) {
 							console.log("Successfully inserted the transaction")
 							console.log(results);
 							sql = 'INSERT INTO conversion (transaction_id, to_currency, from_currency, rate) VALUES (?,?,?,?)';
-							
+							let params = [transaction.trId, conversions[index]._toCurrency,  conversions[index]._fromCurrency,
+								conversions[index]._conversionRate];
+
 							rds.query({
 								instanceIdentifier: 'slappbooksdb',
 								query: sql,
-								inserts: [transaction.trId, conversions[index]._toCurrency,  conversions[index]._fromCurrency, conversions[index]._conversionRate]
+								inserts: params
 							}, function (error, results, connection) {
 								if (error) {
 									connection.rollback();
