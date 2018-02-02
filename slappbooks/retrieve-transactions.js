@@ -19,51 +19,49 @@ exports.handler = function (event, context, callback) {
 	// Retrieve all transactions limited by the start index and page size
 	let sql = 'SELECT * FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name = ? LIMIT ?,?';
 	
-			rds.query({
+	rds.query({
+		instanceIdentifier: 'slappbooksdb',
+		query: 'SELECT count(*) as count FROM transaction;'
+	}, function (error, results, connection) {
+		if (error) {
+			console.log("Error occurred while retrieving count", error);
+			throw error;
+		} else {
+			console.log("Successfully obtained database count");
+			console.log(results[0].count);
+			pageNumber = Math.ceil(parseFloat(results[0].count) / parseFloat(pageSize));
+			
+				rds.query({
 				instanceIdentifier: 'slappbooksdb',
-				query: 'SELECT count(*) as count FROM transaction;'
+				query: sql,
+				inserts: [entityName, startIndex, pageSize]
 			}, function (error, results, connection) {
 				if (error) {
-					console.log("Error occurred while retrieving count", error);
+					console.log("Error occurred while retreiving transactions", error);
 					throw error;
 				} else {
-					console.log("Successfully obtained database count");
-					console.log(results[0].count);
-					pageNumber = Math.ceil(parseFloat(results[0].count) / parseFloat(pageSize));
-					
-					let x = [entityName, startIndex, pageSize];
-					rds.query({
-						instanceIdentifier: 'slappbooksdb',
-						query: sql,
-						inserts: x
-					}, function (error, results, connection) {
-						if (error) {
-							console.log("Error occurred while retreiving transactions", error);
-							throw error;
-						} else {
-							let transactions = [];
-							console.log("Successfully retreived transactions");
-							results.forEach(result => {
-								transactions.push({
-									trId: result.transaction_id,
-									date: result.date,
-									checkNo: result.cheque_no,
-									voucherNo: result.voucher_no,
-									isCredit: result.is_credit,
-									amount: result.amount,
-									notes: result.notes,
-									reconcile: result.reconcile,
-									setId: result.set_id,
-									entityName: entityName
-								});
-							});
-							let finalResult = { rows: transactions, pages: pageNumber}
-							console.log(finalResult);
-							connection.end();
-							callback(null, finalResult);
-						}
-					}, connection);
-
+					let transactions = [];
+					console.log("Successfully retreived transactions");
+					results.forEach(result => {
+						transactions.push({
+							trId: result.transaction_id,
+							date: result.date,
+							checkNo: result.cheque_no,
+							voucherNo: result.voucher_no,
+							isCredit: result.is_credit,
+							amount: result.amount,
+							notes: result.notes,
+							reconcile: result.reconcile,
+							setId: result.set_id,
+							entityName: entityName
+						});
+					});
+					let finalResult = { rows: transactions, pages: pageNumber}
+					console.log(finalResult);
+					connection.end();
+					callback(error, finalResult);
 				}
-			});
+			}, connection);
+		}
+	});
 }

@@ -13,20 +13,18 @@ exports.handler = function (event, context, callback) {
 		transaction.isCredit = transaction.isCredit ? 1 : 0;
 	});
 
-
 	rds.beginTransaction({
 		instanceIdentifier: 'slappbooksdb'
 	}, function (error, connection) {
 		if (error) { throw err; }
+		let sql = 'INSERT INTO transaction (transaction_id, set_id, date, entity_id, is_credit, cheque_no, voucher_no, amount, notes, reconcile)' + 
+		' VALUES (?,?,?,?,?, ?, ?, ?, ?, ?);'
 
-		let sql = 'INSERT INTO transaction (transaction_id, set_id, date, entity_id, is_credit, cheque_no, voucher_no, amount, notes, reconcile) VALUES (?,?,?,?,?, ?, ?, ?, ?, ?);'
 		transactions.forEach( (transaction, index) => {
-
-			let x = [transaction.entityName];
 			rds.query({
 				instanceIdentifier: 'slappbooksdb',
 				query: 'SELECT id FROM entity WHERE name = ?',
-				inserts: x
+				inserts: [transaction.entityName]
 			}, function (error, results, connection) {
 				if (error) {
 					console.log("Error occurred while retreiving the entity id from the database", error);
@@ -37,35 +35,31 @@ exports.handler = function (event, context, callback) {
 					let entity_id = results[0].id;
 					console.log(transaction.trId);
 					
-					let y = [transaction.trId, transaction.setId, transaction.date, entity_id, transaction.isCredit, transaction.checkNo, transaction.voucherNo, transaction.amount, transaction.notes, transaction.reconcile];
 					rds.query({
 						identifier: 'slappbooksdb',
 						query: sql,
-						inserts: y
+						inserts: [transaction.trId, transaction.setId, transaction.date, entity_id, transaction.isCredit, transaction.checkNo, 
+						transaction.voucherNo, transaction.amount, transaction.notes, transaction.reconcile]
 					}, function (error, results, connection) {
 						if (error) {
 							connection.rollback();
 							console.log("Error occurred while inserting the transaction", error);
+							callback(error, JSON.stringify(event));
 							throw error;
 						} else {
 							console.log("Successfully inserted the transaction")
 							console.log(results);
 						}
 
-						if(index === transactions.length) {
+						if(index === transactions.length - 1) {
+							console.log("ending connection", index);
 							connection.end();
+							callback(error, JSON.stringify(event));
 						}
 					}, connection);
-
 				}
-
 			}, connection);
-
 			connection.commit();
 		});
-
 	});
-
-
-	callback(null, JSON.stringify(event));
 }

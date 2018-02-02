@@ -12,11 +12,10 @@ exports.handler = function (event, context, callback) {
 	}, function (error, connection) {
 		if (error) { throw err; }
 
-		let x = [entityName]
 		rds.query({
 			instanceIdentifier: 'slappbooksdb',
 			query: 'DELETE t2 FROM transaction t1 INNER JOIN entity e ON t1.entity_id=e.id INNER JOIN transaction t2 ON t1.set_id=t2.set_id WHERE e.name=?',
-			inserts: x
+			inserts: [entityName]
 		}, function (error, results, connection) {
 			if (error) {
 				connection.rollback();
@@ -26,28 +25,26 @@ exports.handler = function (event, context, callback) {
 				console.log("Successfully deleted the transactions");
 				console.log(results);
 
-				let y = [entityName];
 				rds.query({
 					instanceIdentifier: 'slappbooksdb',
 					query: 'DELETE FROM entity WHERE name=?',
-					inserts: y
+					inserts: [entityName]
 				}, function (error, results, connection) {
 					if (error) {
 						connection.rollback();
-						console.log("Error occurred while deleting the entity");
+						console.log("Error occurred while deleting the entity ", entityName);
+						callback(error, JSON.stringify(event));
 						throw error;
 					} else {
 						connection.commit();
-						console.log("Successfully deleted the entity");
-						console.log(results);
+						console.log("Successfully deleted the entity ", entityName);
 						connection.end();
+						callback(error, JSON.stringify(event));
 					}
 
 				}, connection);
 			}
-		});
+		}, connection);
 
 	});
-
-	callback(null, 'Successfully executed');
 }

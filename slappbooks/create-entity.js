@@ -7,22 +7,22 @@ exports.handler = function (event, context, callback) {
 
 	let entity = event;
 
-	let x = [entity.entity, entity.currency, entity.entityType];
 	let sql = 'INSERT INTO entity (name, currency, type) values (?, ?, ?)';
 	// Insert entity value to the database
 	rds.query({
 		instanceIdentifier: 'slappbooksdb',
 		query: sql,
-		inserts: x
+		inserts: [entity.entity, entity.currency, entity.entityType]
 	}, function (error, results, connection) {
 		if (error) {
 			console.log("Error occurred while inserting the entity", error);
+			connection.end();
+			callback(error, JSON.stringify({error: "Error occurred while inserting the entity"}));
 			throw error;
 		} else {
 			console.log("Successfully inserted the entity");
-			console.log(results);
+			connection.end();
+			callback(error, JSON.stringify({success: "successfully created the entity"}));
 		}
-		connection.end();
-		callback(null, 'Successfully executed');
 	});
 }

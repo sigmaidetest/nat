@@ -23,76 +23,64 @@ exports.handler = function (event, context, callback) {
 	}, function (error, connection) {
 		if (error) { throw err; }
 
-		let sql = 'INSERT INTO transaction (transaction_id, set_id, date, entity_id, is_credit, cheque_no, voucher_no, amount, notes, reconcile) VALUES (?,?,?,?,?, ?, ?, ?, ?, ?);'
+		let sql = 'INSERT INTO transaction (transaction_id, set_id, date, entity_id, is_credit, cheque_no, voucher_no, amount, notes,' + 
+		' reconcile) VALUES (?,?,?,?,?, ?, ?, ?, ?, ?);'
 		transactions.forEach((transaction, index) => {
-
-			let x = [transaction.entityName];
 			rds.query({
 				instanceIdentifier: 'slappbooksdb',
 				query: 'SELECT id FROM entity WHERE name = ?',
-				inserts: x
+				inserts: [transaction.entityName]
 			}, function (error, results, connection) {
 				if (error) {
 					console.log("Error occurred while retreiving the entity id from the database", error);
 					connection.rollback();
+					connection.end();
 					throw error;
 				} else {
 					console.log("Successfully retrieved the entity id")
 					let entity_id = results[0].id;
 					console.log(transaction.trId);
-
-					let y = [transaction.trId, transaction.setId, transaction.date, entity_id, transaction.isCredit, transaction.checkNo, transaction.voucherNo, transaction.amount, transaction.notes, transaction.reconcile];					
+					
 					rds.query({
 						identifier: 'slappbooksdb',
 						query: sql,
-						inserts: y
+						inserts: [transaction.trId, transaction.setId, transaction.date, entity_id, transaction.isCredit, transaction.checkNo, transaction.voucherNo, transaction.amount, transaction.notes, transaction.reconcile]
 					}, function (error, results, connection) {
 						if (error) {
 							connection.rollback();
+							connection.end();
 							console.log("Error occurred while inserting the transaction", error);
 							throw error;
 						} else {
 							console.log("Successfully inserted the transaction")
 							console.log(results);
-
-
 							sql = 'INSERT INTO conversion (transaction_id, to_currency, from_currency, rate) VALUES (?,?,?,?)';
 							
-							let z = [transaction.trId, conversions[index]._toCurrency,  conversions[index]._fromCurrency, conversions[index]._conversionRate];
 							rds.query({
 								instanceIdentifier: 'slappbooksdb',
 								query: sql,
-								inserts: z
+								inserts: [transaction.trId, conversions[index]._toCurrency,  conversions[index]._fromCurrency, conversions[index]._conversionRate]
 							}, function (error, results, connection) {
 								if (error) {
 									connection.rollback();
+									connection.end();
 									console.log("Error occurred while inserting conversions");
 									throw error;
 								} else {
 									console.log("Successfully inserted a conversion object");
 									console.log(results);
 								}
-
-								connection.end();
-							});
-
+							}, connection);
 						}
 
-						if (index === transactions.length) {
+						if (index === transactions.length - 1) {
+							connection.commit();
 							connection.end();
+							callback(error, JSON.stringify(event));
 						}
 					}, connection);
-
-
-
 				}
-
 			}, connection);
-
-			connection.commit();
 		});
-
 	});
-
-	callback(null, JSON.stringify(event));
 }
