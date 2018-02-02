@@ -39,26 +39,27 @@
           "rds-slappbooksdb",
           "rds-slappbooksdb",
           "rds-slappbooksdb",
-          "apigusEast1slappbooksapiaddTransactionpost"
+          "apigusEast1slappbooksapiaddTransactionpost",
+          "apigusEast1slappbooksapicreateEntitypost",
+          "apigusEast1slappbooksapideleteEntitypost",
+          "apigusEast1slappbooksapideleteTransactionpost",
+          "apigusEast1slappbooksapigetEntityListget",
+          "apigusEast1slappbooksapigetMonthlyTransactionListpost",
+          "apigusEast1slappbooksapicreateTransactionWithCurrencyDifferencepost",
+          "apigusEast1slappbooksapigetTrialBalancepost",
+          "apigusEast1slappbooksapigetTrialBalancepost",
+          "apigusEast1slappbooksapigetTransactionByIdget",
+          "apigusEast1slappbooksapigetTransactionListpost",
+          "apigusEast1slappbooksapiupdateTransactionpost",
+          "apigusEast1slappbooksapicreateTransactionWithCurrencyDifferencepost"
         ],
         "triggers": [
           {
             "resourceName": "apigusEast1slappbooksapiaddTransactionpost",
-            "config": {
-              "selectedRegion": "us-east-1",
-              "apiMode": 0,
-              "apiName": "slappbooksapi",
-              "endpointType": "EDGE",
-              "resourceMode": 0,
-              "resourceName": "addTransaction",
-              "resourcePath": "/addTransaction",
-              "restMethod": "POST",
-              "stageMode": 0,
-              "stageName": "Prod"
-            }
+            "config": {}
           }
         ],
-        "version": 14
+        "version": 1
       },
       "1c7fb2a7-02c1-4104-9bfe-cbd3b96c79d5": {
         "id": "1c7fb2a7-02c1-4104-9bfe-cbd3b96c79d5",
@@ -153,7 +154,7 @@
             }
           }
         ],
-        "version": 30
+        "version": 1
       },
       "1f616325-bebd-4cb6-9a59-efae98b7760d": {
         "id": "1f616325-bebd-4cb6-9a59-efae98b7760d",
@@ -616,8 +617,10 @@
       }
     },
     "rootNode": "261bafd6-e58c-475d-9415-c1a9385d5243",
-    "openFiles": [],
-    "currentFileId": "3e289213-2e08-453c-a6c3-139ee447fd70",
+    "openFiles": [
+      "6ce22331-3d5d-4d2e-a5ff-a2f2b38257dd"
+    ],
+    "currentFileId": "6ce22331-3d5d-4d2e-a5ff-a2f2b38257dd",
     "resources": {
       "rds-slappbooksdb": {
         "name": "rds-slappbooksdb",
@@ -1648,37 +1651,7 @@
             "occurrence": 2,
             "triggers": []
           },
-          "0cafcfb9-14f8-4cdc-861f-299678af0759": {
-            "operations": {
-              "query": [
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "SELECT count(*) as count FROM transaction;"
-                },
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "@{sql}",
-                  "inserts": "@{params}"
-                }
-              ]
-            },
-            "occurrence": 2,
-            "triggers": []
-          },
           "10af9bcd-ac92-434b-9eb0-ca8ff233ec9b": {
-            "operations": {
-              "query": [
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "@{sql}",
-                  "inserts": "@{params}"
-                }
-              ]
-            },
-            "occurrence": 1,
-            "triggers": []
-          },
-          "1f616325-bebd-4cb6-9a59-efae98b7760d": {
             "operations": {
               "query": [
                 {
@@ -1702,134 +1675,6 @@
             },
             "occurrence": 1,
             "triggers": []
-          },
-          "02bc79d4-d52f-4002-b502-992569e9d409": {
-            "operations": {
-              "beginTransaction": [
-                {
-                  "instanceIdentifier": "slappbooksdb"
-                }
-              ],
-              "query": [
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "SELECT id FROM entity WHERE name = ?",
-                  "inserts": "@{entity}"
-                },
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "@{sql}",
-                  "inserts": "@{params}"
-                }
-              ]
-            },
-            "occurrence": 3,
-            "triggers": []
-          },
-          "d5925ac9-5dfa-4cc8-9963-15dd6fb40204": {
-            "operations": {
-              "beginTransaction": [
-                {
-                  "instanceIdentifier": "slappbooksdb"
-                }
-              ],
-              "query": [
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "SELECT id FROM entity WHERE name = ?",
-                  "inserts": "@{entity}"
-                },
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "@{sql}",
-                  "inserts": "@{entry}"
-                }
-              ]
-            },
-            "occurrence": 3,
-            "triggers": []
-          },
-          "0fddcfbb-9df4-458a-a743-9f28159227fc": {
-            "operations": {
-              "beginTransaction": [
-                {
-                  "instanceIdentifier": "slappbooksdb"
-                }
-              ],
-              "query": [
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "@{sql}",
-                  "inserts": "@{id}"
-                }
-              ]
-            },
-            "occurrence": 2,
-            "triggers": []
-          },
-          "0b73f184-a777-475d-9741-bf94b7a4629a": {
-            "operations": {
-              "query": [
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "SELECT count(*) as count FROM transaction T INNER JOIN entity E ON T.entity_id = E.id WHERE E.name=?",
-                  "inserts": "@{entity}"
-                },
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "@{sql}",
-                  "inserts": "@{timeQuery}"
-                },
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "@{debitSql}",
-                  "inserts": "@{params}"
-                },
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "@{creditSql}",
-                  "inserts": "@{params}"
-                }
-              ]
-            },
-            "occurrence": 4,
-            "triggers": []
-          },
-          "8585b721-aeb2-4a48-978d-ddfca08566d1": {
-            "operations": {
-              "beginTransaction": [
-                {
-                  "instanceIdentifier": "slappbooksdb"
-                }
-              ],
-              "query": [
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "DELETE t2 FROM transaction t1 INNER JOIN entity e ON t1.entity_id=e.id INNER JOIN transaction t2 ON t1.set_id=t2.set_id WHERE e.name=?",
-                  "inserts": "@{entity}"
-                },
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "DELETE FROM entity WHERE name=?",
-                  "inserts": "@{entity}"
-                }
-              ]
-            },
-            "occurrence": 3,
-            "triggers": []
-          },
-          "3e289213-2e08-453c-a6c3-139ee447fd70": {
-            "operations": {
-              "query": [
-                {
-                  "instanceIdentifier": "slappbooksdb",
-                  "query": "@{sql}",
-                  "inserts": "@{params}"
-                }
-              ]
-            },
-            "occurrence": 1,
-            "triggers": []
           }
         }
       },
@@ -1845,6 +1690,7 @@
           "resourceName": "addTransaction",
           "resourcePath": "/addTransaction",
           "restMethod": "POST",
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -1854,18 +1700,7 @@
             "operations": {},
             "occurrence": 1,
             "triggers": [
-              {
-                "selectedRegion": "us-east-1",
-                "apiMode": 0,
-                "apiName": "slappbooksapi",
-                "endpointType": "EDGE",
-                "resourceMode": 0,
-                "resourceName": "addTransaction",
-                "resourcePath": "/addTransaction",
-                "restMethod": "POST",
-                "stageMode": 0,
-                "stageName": "Prod"
-              }
+              {}
             ]
           }
         }
@@ -1883,6 +1718,7 @@
           "resourcePath": "/createEntity",
           "restMethod": "POST",
           "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -1922,6 +1758,7 @@
           "resourcePath": "/deleteEntity",
           "restMethod": "POST",
           "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -1961,6 +1798,7 @@
           "resourcePath": "/deleteTransaction",
           "restMethod": "POST",
           "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -2000,6 +1838,7 @@
           "resourcePath": "/getEntityList",
           "restMethod": "GET",
           "proxyIntegration": true,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -2039,6 +1878,7 @@
           "resourcePath": "/getMonthlyTransactionList",
           "restMethod": "POST",
           "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -2065,123 +1905,6 @@
           }
         }
       },
-      "apigusEast1slappbooksapigetTransactionByIdget": {
-        "name": "apigusEast1slappbooksapigetTransactionByIdget",
-        "type": "API_GATEWAY",
-        "config": {
-          "selectedRegion": "us-east-1",
-          "apiMode": 0,
-          "apiName": "slappbooksapi",
-          "endpointType": "EDGE",
-          "resourceMode": 0,
-          "resourceName": "getTransactionById",
-          "resourcePath": "/getTransactionById",
-          "restMethod": "GET",
-          "proxyIntegration": true,
-          "stageMode": 0,
-          "stageName": "Prod"
-        },
-        "globallyEditable": true,
-        "usage": {
-          "1f616325-bebd-4cb6-9a59-efae98b7760d": {
-            "operations": {},
-            "occurrence": 1,
-            "triggers": [
-              {
-                "selectedRegion": "us-east-1",
-                "apiMode": 0,
-                "apiName": "slappbooksapi",
-                "endpointType": "EDGE",
-                "resourceMode": 0,
-                "resourceName": "getTransactionById",
-                "resourcePath": "/getTransactionById",
-                "restMethod": "GET",
-                "proxyIntegration": true,
-                "stageMode": 0,
-                "stageName": "Prod"
-              }
-            ]
-          }
-        }
-      },
-      "apigusEast1slappbooksapicreateTransactionWithCurrencyDifferencepost": {
-        "name": "apigusEast1slappbooksapicreateTransactionWithCurrencyDifferencepost",
-        "type": "API_GATEWAY",
-        "config": {
-          "selectedRegion": "us-east-1",
-          "apiMode": 0,
-          "apiName": "slappbooksapi",
-          "endpointType": "EDGE",
-          "resourceMode": 0,
-          "resourceName": "createTransactionWithCurrencyDifference",
-          "resourcePath": "/createTransactionWithCurrencyDifference",
-          "restMethod": "POST",
-          "proxyIntegration": false,
-          "stageMode": 0,
-          "stageName": "Prod"
-        },
-        "globallyEditable": true,
-        "usage": {
-          "02bc79d4-d52f-4002-b502-992569e9d409": {
-            "operations": {},
-            "occurrence": 1,
-            "triggers": [
-              {
-                "selectedRegion": "us-east-1",
-                "apiMode": 0,
-                "apiName": "slappbooksapi",
-                "endpointType": "EDGE",
-                "resourceMode": 0,
-                "resourceName": "createTransactionWithCurrencyDifference",
-                "resourcePath": "/createTransactionWithCurrencyDifference",
-                "restMethod": "POST",
-                "proxyIntegration": false,
-                "stageMode": 0,
-                "stageName": "Prod"
-              }
-            ]
-          }
-        }
-      },
-      "apigusEast1slappbooksapigetTransactionListpost": {
-        "name": "apigusEast1slappbooksapigetTransactionListpost",
-        "type": "API_GATEWAY",
-        "config": {
-          "selectedRegion": "us-east-1",
-          "apiMode": 0,
-          "apiName": "slappbooksapi",
-          "endpointType": "EDGE",
-          "resourceMode": 0,
-          "resourceName": "getTransactionList",
-          "resourcePath": "/getTransactionList",
-          "restMethod": "POST",
-          "proxyIntegration": false,
-          "stageMode": 0,
-          "stageName": "Prod"
-        },
-        "globallyEditable": true,
-        "usage": {
-          "0cafcfb9-14f8-4cdc-861f-299678af0759": {
-            "operations": {},
-            "occurrence": 1,
-            "triggers": [
-              {
-                "selectedRegion": "us-east-1",
-                "apiMode": 0,
-                "apiName": "slappbooksapi",
-                "endpointType": "EDGE",
-                "resourceMode": 0,
-                "resourceName": "getTransactionList",
-                "resourcePath": "/getTransactionList",
-                "restMethod": "POST",
-                "proxyIntegration": false,
-                "stageMode": 0,
-                "stageName": "Prod"
-              }
-            ]
-          }
-        }
-      },
       "apigusEast1slappbooksapigetTrialBalancepost": {
         "name": "apigusEast1slappbooksapigetTrialBalancepost",
         "type": "API_GATEWAY",
@@ -2195,6 +1918,7 @@
           "resourcePath": "/getTrialBalance",
           "restMethod": "POST",
           "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -2221,6 +1945,86 @@
           }
         }
       },
+      "apigusEast1slappbooksapigetTransactionByIdget": {
+        "name": "apigusEast1slappbooksapigetTransactionByIdget",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 0,
+          "apiName": "slappbooksapi",
+          "endpointType": "EDGE",
+          "resourceMode": 0,
+          "resourceName": "getTransactionById",
+          "resourcePath": "/getTransactionById",
+          "restMethod": "GET",
+          "proxyIntegration": true,
+          "enableCORS": true,
+          "stageMode": 0,
+          "stageName": "Prod"
+        },
+        "globallyEditable": true,
+        "usage": {
+          "1f616325-bebd-4cb6-9a59-efae98b7760d": {
+            "operations": {},
+            "occurrence": 1,
+            "triggers": [
+              {
+                "selectedRegion": "us-east-1",
+                "apiMode": 0,
+                "apiName": "slappbooksapi",
+                "endpointType": "EDGE",
+                "resourceMode": 0,
+                "resourceName": "getTransactionById",
+                "resourcePath": "/getTransactionById",
+                "restMethod": "GET",
+                "proxyIntegration": true,
+                "stageMode": 0,
+                "stageName": "Prod"
+              }
+            ]
+          }
+        }
+      },
+      "apigusEast1slappbooksapigetTransactionListpost": {
+        "name": "apigusEast1slappbooksapigetTransactionListpost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 0,
+          "apiName": "slappbooksapi",
+          "endpointType": "EDGE",
+          "resourceMode": 0,
+          "resourceName": "getTransactionList",
+          "resourcePath": "/getTransactionList",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": true,
+          "stageMode": 0,
+          "stageName": "Prod"
+        },
+        "globallyEditable": true,
+        "usage": {
+          "0cafcfb9-14f8-4cdc-861f-299678af0759": {
+            "operations": {},
+            "occurrence": 1,
+            "triggers": [
+              {
+                "selectedRegion": "us-east-1",
+                "apiMode": 0,
+                "apiName": "slappbooksapi",
+                "endpointType": "EDGE",
+                "resourceMode": 0,
+                "resourceName": "getTransactionList",
+                "resourcePath": "/getTransactionList",
+                "restMethod": "POST",
+                "proxyIntegration": false,
+                "stageMode": 0,
+                "stageName": "Prod"
+              }
+            ]
+          }
+        }
+      },
       "apigusEast1slappbooksapiupdateTransactionpost": {
         "name": "apigusEast1slappbooksapiupdateTransactionpost",
         "type": "API_GATEWAY",
@@ -2234,6 +2038,7 @@
           "resourcePath": "/updateTransaction",
           "restMethod": "POST",
           "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -2251,6 +2056,46 @@
                 "resourceMode": 0,
                 "resourceName": "updateTransaction",
                 "resourcePath": "/updateTransaction",
+                "restMethod": "POST",
+                "proxyIntegration": false,
+                "stageMode": 0,
+                "stageName": "Prod"
+              }
+            ]
+          }
+        }
+      },
+      "apigusEast1slappbooksapicreateTransactionWithCurrencyDifferencepost": {
+        "name": "apigusEast1slappbooksapicreateTransactionWithCurrencyDifferencepost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 0,
+          "apiName": "slappbooksapi",
+          "endpointType": "EDGE",
+          "resourceMode": 0,
+          "resourceName": "createTransactionWithCurrencyDifference",
+          "resourcePath": "/createTransactionWithCurrencyDifference",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": true,
+          "stageMode": 0,
+          "stageName": "Prod"
+        },
+        "globallyEditable": true,
+        "usage": {
+          "02bc79d4-d52f-4002-b502-992569e9d409": {
+            "operations": {},
+            "occurrence": 1,
+            "triggers": [
+              {
+                "selectedRegion": "us-east-1",
+                "apiMode": 0,
+                "apiName": "slappbooksapi",
+                "endpointType": "EDGE",
+                "resourceMode": 0,
+                "resourceName": "createTransactionWithCurrencyDifference",
+                "resourcePath": "/createTransactionWithCurrencyDifference",
                 "restMethod": "POST",
                 "proxyIntegration": false,
                 "stageMode": 0,
@@ -2315,7 +2160,7 @@
     "projectVersion": "1.0.0",
     "repoName": "nat",
     "repoUrl": "https://github.com/sigmaidetest/nat",
-    "lastSave": 1517546900455,
+    "lastSave": 1517553090452,
     "projectRegion": "us-east-1"
   }
 }
