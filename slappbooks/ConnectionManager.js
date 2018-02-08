@@ -25,7 +25,7 @@ module.exports = function () {
     this.dbConnections = [];
 
     this.dbConnections["slappbooksdb"] = {
-        host: process.env.EndPoint_slappbooksdb,
+        host: process.env.EndPoint_rdsSlappbooksdb,
         port: "3306",
         user: "slappbooksuser",
         password: "12345678",
