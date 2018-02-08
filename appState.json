@@ -483,7 +483,8 @@
         "isRemovable": true,
         "filePath": "slappbooks/ConnectionManager.js",
         "code": "/*\n * Copyright (c) 2018 SLAppForge Lanka (Private) Limited. All Rights Reserved.\n * https://www.slappforge.com\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License. \n */\n\n/**\n * The file includes credentials of the RDS instance\n *\n * @author Malith Jayaweera\n */\nmodule.exports = function () {\n\n    this.dbConnections = [];\n\n    this.dbConnections[\"slappbooksdb\"] = {\n        host: process.env.EndPoint_slappbooksdb,\n        port: \"3306\",\n        user: \"slappbooksuser\",\n        password: \"12345678\",\n        database: \"slappbooksdb\",\n    };\n\n};",
-        "triggers": []
+        "triggers": [],
+        "version": 1
       },
       "8585b721-aeb2-4a48-978d-ddfca08566d1": {
         "id": "8585b721-aeb2-4a48-978d-ddfca08566d1",
@@ -542,7 +543,8 @@
               "stageName": "Prod"
             }
           }
-        ]
+        ],
+        "version": 1
       }
     },
     "rootNode": "261bafd6-e58c-475d-9415-c1a9385d5243",
@@ -1572,24 +1574,7 @@
           "resourceName": "addTransaction",
           "resourcePath": "/addTransaction",
           "restMethod": "POST",
-          "stageMode": 0,
-          "stageName": "Prod"
-        },
-        "globallyEditable": true
-      },
-      "apigusEast1slappbooksapicreateEntitypost": {
-        "name": "apigusEast1slappbooksapicreateEntitypost",
-        "type": "API_GATEWAY",
-        "config": {
-          "selectedRegion": "us-east-1",
-          "apiMode": 0,
-          "apiName": "slappbooksapi",
-          "endpointType": "EDGE",
-          "resourceMode": 0,
-          "resourceName": "createEntity",
-          "resourcePath": "/createEntity",
-          "restMethod": "POST",
-          "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -1608,6 +1593,26 @@
           "resourcePath": "/deleteEntity",
           "restMethod": "POST",
           "proxyIntegration": false,
+          "enableCORS": true,
+          "stageMode": 0,
+          "stageName": "Prod"
+        },
+        "globallyEditable": true
+      },
+      "apigusEast1slappbooksapicreateEntitypost": {
+        "name": "apigusEast1slappbooksapicreateEntitypost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 0,
+          "apiName": "slappbooksapi",
+          "endpointType": "EDGE",
+          "resourceMode": 0,
+          "resourceName": "createEntity",
+          "resourcePath": "/createEntity",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -1626,6 +1631,7 @@
           "resourcePath": "/deleteTransaction",
           "restMethod": "POST",
           "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -1644,6 +1650,7 @@
           "resourcePath": "/getEntityList",
           "restMethod": "GET",
           "proxyIntegration": true,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -1662,6 +1669,7 @@
           "resourcePath": "/getMonthlyTransactionList",
           "restMethod": "POST",
           "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -1680,6 +1688,7 @@
           "resourcePath": "/getTransactionById",
           "restMethod": "GET",
           "proxyIntegration": true,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -1698,24 +1707,7 @@
           "resourcePath": "/createTransactionWithCurrencyDifference",
           "restMethod": "POST",
           "proxyIntegration": false,
-          "stageMode": 0,
-          "stageName": "Prod"
-        },
-        "globallyEditable": true
-      },
-      "apigusEast1slappbooksapigetTransactionListpost": {
-        "name": "apigusEast1slappbooksapigetTransactionListpost",
-        "type": "API_GATEWAY",
-        "config": {
-          "selectedRegion": "us-east-1",
-          "apiMode": 0,
-          "apiName": "slappbooksapi",
-          "endpointType": "EDGE",
-          "resourceMode": 0,
-          "resourceName": "getTransactionList",
-          "resourcePath": "/getTransactionList",
-          "restMethod": "POST",
-          "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -1734,6 +1726,26 @@
           "resourcePath": "/getTrialBalance",
           "restMethod": "POST",
           "proxyIntegration": false,
+          "enableCORS": true,
+          "stageMode": 0,
+          "stageName": "Prod"
+        },
+        "globallyEditable": true
+      },
+      "apigusEast1slappbooksapigetTransactionListpost": {
+        "name": "apigusEast1slappbooksapigetTransactionListpost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 0,
+          "apiName": "slappbooksapi",
+          "endpointType": "EDGE",
+          "resourceMode": 0,
+          "resourceName": "getTransactionList",
+          "resourcePath": "/getTransactionList",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -1752,6 +1764,7 @@
           "resourcePath": "/updateTransaction",
           "restMethod": "POST",
           "proxyIntegration": false,
+          "enableCORS": true,
           "stageMode": 0,
           "stageName": "Prod"
         },
@@ -1809,9 +1822,9 @@
     "projectName": "slappbooks",
     "projectDescription": "slappbooks",
     "projectVersion": "1.0.0",
-    "projectRegion": "us-east-1",
     "repoName": "nat",
     "repoUrl": "https://github.com/sigmaidetest/nat",
-    "lastSave": 1518067403614
+    "projectRegion": "us-east-1",
+    "lastSave": 1518071940235
   }
 }
